@@ -9,6 +9,7 @@
 
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+import type { OpenApiMeta } from 'better-trpc-openapi';
 import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
@@ -70,7 +71,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  * errors on the backend.
  */
 
-const t = initTRPC.context<typeof createTRPCContext>().create({
+const t = initTRPC.context<typeof createTRPCContext>().meta<OpenApiMeta>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
     return {

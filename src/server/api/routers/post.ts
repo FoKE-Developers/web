@@ -9,15 +9,20 @@ import { posts } from "~/server/db/schema";
 
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
+    .meta({ openapi: { method: "GET", path: '/hello', summary: "get hello", tags: ['post'], description: '인자로 받은 text를 Hello 뒤에 붙여서 보내줍니다.' } })
     .input(z.object({ text: z.string() }))
+    .output(z.object({ greeting: z.string() }))
     .query(({ input }) => {
+      console.log({ input })
       return {
         greeting: `Hello ${input.text}`,
       };
     }),
 
   create: protectedProcedure
+    .meta({ openapi: { method: 'POST', path: '/hello', summary: 'create hello', tags: ['post'], description: 'post를 생성합니다.', protect: true }})
     .input(z.object({ name: z.string().min(1) }))
+    .output(z.void())
     .mutation(async ({ ctx, input }) => {
       await ctx.db.insert(posts).values({
         name: input.name,
