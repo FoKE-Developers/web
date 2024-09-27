@@ -38,6 +38,9 @@ importers:
       '@trpc/server':
         specifier: ^11.0.0-rc.446
         version: 11.0.0-rc.532
+      axios:
+        specifier: ^1.7.7
+        version: 1.7.7
       better-trpc-openapi:
         specifier: github:deldrid1/trpc-openapi#a99adb49e8e7c9304aa2988b425d36957d99fc53
         version: https://codeload.github.com/deldrid1/trpc-openapi/tar.gz/a99adb49e8e7c9304aa2988b425d36957d99fc53(@trpc/server@11.0.0-rc.532)(zod@3.23.8)
