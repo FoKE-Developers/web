@@ -19,9 +19,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     responseMeta: undefined,
     onError:
       env.NODE_ENV === 'development'
-        ? // @ts-ignore
-          ({ path, error }) => {
+        ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ({ path, error }: any) => {
             console.error(
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               `❌ tRPC failed on ${path ?? '<no-path>'}: ${error.message}`
             );
           }
