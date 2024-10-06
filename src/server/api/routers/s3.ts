@@ -60,6 +60,7 @@ export const s3Router = createTRPCRouter({
         Bucket: env.BUCKET_NAME,
         Key: `${ctx.session.user.name}/${key}`,
         ContentLength, // 10 MB
+        ACL: 'public-read',
       });
 
       return {
