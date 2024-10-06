@@ -31,6 +31,7 @@
     "bcrypt": "^5.1.1",
     "better-trpc-openapi": "github:deldrid1/trpc-openapi#a99adb49e8e7c9304aa2988b425d36957d99fc53",
     "drizzle-orm": "^0.33.0",
+    "emotion-reset": "^3.0.1",
     "geist": "^1.3.0",
     "jsonwebtoken": "^9.0.2",
     "next": "^14.2.4",
