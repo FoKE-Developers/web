@@ -4,7 +4,15 @@ import axios from 'axios';
 import SwaggerUI from 'swagger-ui-react';
 
 const Docs = ({ spec }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  return <SwaggerUI spec={spec} />;
+  return (
+    <SwaggerUI
+      deepLinking
+      persistAuthorization
+      spec={spec}
+      docExpansion="full"
+      defaultModelRendering="model"
+    />
+  );
 };
 
 export const getStaticProps = (async () => {
