@@ -9,7 +9,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "dev": "next dev -p 80",
+    "dev": "npm-run-all -p dev:*",
+    "dev:app": "next dev -p 80",
+    "dev:ssl": "local-ssl-proxy --key /etc/letsencrypt/live/4cuts.store/privkey.pem --cert /etc/letsencrypt/live/4cuts.store/fullchain.pem --source 443 --target 80",
     "lint": "next lint",
     "start": "next start"
   },
@@ -55,6 +57,8 @@
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.4",
     "eslint-plugin-drizzle": "^0.2.3",
+    "local-ssl-proxy": "^2.0.5",
+    "npm-run-all": "^4.1.5",
     "typescript": "^5.5.3"
   },
   "ct3aMetadata": {
