@@ -7,12 +7,14 @@ export const ZUser = z.object({
     .string()
     .min(1, '1글자 이상 입력해주세요')
     .max(32, '32자 이하로 입력해주세요')
-    .email('이메일 형식으로 입력해주세요'),
+    .email('이메일 형식으로 입력해주세요')
+    .describe('중복 불가'),
   emailVerified: z.date().nullable(),
   name: z
     .string()
     .min(1, '1글자 이상 입력해주세요')
-    .max(32, '32자 이하로 입력해주세요'),
+    .max(32, '32자 이하로 입력해주세요')
+    .describe('중복 불가'),
   password: z
     .string()
     .min(1, '1글자 이상 입력해주세요')

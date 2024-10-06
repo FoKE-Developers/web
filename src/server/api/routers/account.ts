@@ -21,10 +21,17 @@ export const accountRouter = createTRPCRouter({
         path: '/account/register',
         tags: ['account'],
         protect: false,
+        description: '회원가입.',
       },
     })
     .input(ZRegisterUser)
-    .output(z.object({ token: z.string() }))
+    .output(
+      z.object({
+        token: z
+          .string()
+          .describe('headers에 "Authorization: Bearer token" 설정'),
+      })
+    )
     .mutation(async ({ input }) => {
       const { email, name, password } = input;
       const hashedPassword = await hashPassword(password);
@@ -66,10 +73,21 @@ export const accountRouter = createTRPCRouter({
     }),
   signIn: publicProcedure
     .meta({
-      openapi: { method: 'GET', path: '/account/signin', tags: ['account'] },
+      openapi: {
+        method: 'GET',
+        path: '/account/signin',
+        tags: ['account'],
+        description: '로그인',
+      },
     })
     .input(ZUserScheme.pick({ email: true, password: true }))
-    .output(z.object({ token: z.string() }))
+    .output(
+      z.object({
+        token: z
+          .string()
+          .describe('headers에 "Authorization: Bearer token" 설정'),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const { email, password } = input;
       const queriedUser = await ctx.db.query.users.findFirst({
@@ -110,9 +128,11 @@ export const accountRouter = createTRPCRouter({
     .meta({
       openapi: {
         method: 'GET',
-        path: '/account/current-user',
+        path: '/account/who-am-i',
         tags: ['account'],
         protect: true,
+        description:
+          'Authorization 헤더에 설정된 토큰을 기반으로 본인의 정보를 가져옴',
       },
     })
     .input(z.void())

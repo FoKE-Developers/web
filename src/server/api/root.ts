@@ -1,4 +1,3 @@
-import { postRouter } from '~/server/api/routers/post';
 import { s3Router } from '~/server/api/routers/s3';
 import { createCallerFactory, createTRPCRouter } from '~/server/api/trpc';
 import { accountRouter } from './routers/account';
@@ -9,7 +8,6 @@ import { accountRouter } from './routers/account';
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  post: postRouter,
   s3: s3Router,
   account: accountRouter,
 });

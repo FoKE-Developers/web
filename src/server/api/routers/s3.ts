@@ -1,25 +1,11 @@
 // source: https://blog.nickramkissoon.com/posts/t3-s3-presigned-urls
-import { PutObjectCommand, UploadPartCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { env } from '~/env.js';
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from '~/server/api/trpc';
+import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
 export const s3Router = createTRPCRouter({
-  getObjects: publicProcedure
-    .meta({ openapi: { method: 'GET', path: '/s3/objects', tags: ['s3'] } })
-    .input(z.void())
-    .output(z.any())
-    .query(({ ctx }) => {
-      return ctx.s3.listObjectsV2({
-        Bucket: env.BUCKET_NAME,
-      });
-    }),
-
   /**
    * It will be used to create a presigned URL that can be used to upload a file with a specific key to our S3 bucket.
    * This will be used for regular uploads, where the entire file is uploaded in a single request.
@@ -31,10 +17,34 @@ export const s3Router = createTRPCRouter({
         path: '/s3/presigned-url',
         tags: ['s3'],
         protect: true,
+        description: `
+          url을 반환함. 반환된 url에 put 요청으로 업로드 할 수 있음.
+          axios.put(url, f.slice(), { headers: { "Content-Type": f.type } })
+          성공시 https://kr.object.ncloudstorage.com/4cuts/\${session.user.id}/\${key} 를 통해서 파일에 접근 가능
+          session.user.name은 회원가입시 입력한 값임. GET /account/who-am-i 를 통해서 획득 가능함.
+        `,
       },
     })
-    .input(z.object({ key: z.string(), ContentLength: z.number() }))
-    .output(z.string())
+    .input(
+      z.object({
+        key: z
+          .string()
+          .describe(`\${session.user.name}/\${key}를 기준으로 스토리지에 저장`),
+        ContentLength: z.number().max(1024 * 1024 * 20).describe(`
+            Byte단위. 
+            20MB인경우 1024 * 1024 * 20. 
+            20MB 제한있음.
+          `),
+      })
+    )
+    .output(
+      z.object({
+        presignedUrl: z.string().describe(`
+        업로드할 주소. 아래 코드를 참고해서 업로드 부탁.
+        axios.put(presignedUrl, f.slice(), { headers: { "Content-Type": f.type } })
+      `),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const { key, ContentLength } = input;
       const { s3 } = ctx;
@@ -43,121 +53,18 @@ export const s3Router = createTRPCRouter({
       if (ContentLength > 1024 * 1024 * 20) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
-          message: 'File too large',
+          message: 'File too large. (20MB Limit)',
         });
       }
       const putObjectCommand = new PutObjectCommand({
         Bucket: env.BUCKET_NAME,
-        Key: `${ctx.session.user.id}/${key}`,
+        Key: `${ctx.session.user.name}/${key}`,
         ContentLength, // 10 MB
+        ACL: 'public-read',
       });
-
-      return await getSignedUrl(s3, putObjectCommand);
-    }),
-
-  /**
-   * This will be used to upload a file in multiple parts, so we need a presigned URL for each part.
-   * Before creating the URLS, the multipart upload needs to be initialized, so we will be doing that as well.
-   */
-  getMultipartUploadPresignedUrl: protectedProcedure
-    .meta({
-      openapi: {
-        method: 'GET',
-        path: '/s3/multipart-presignedUrl',
-        tags: ['s3'],
-        protect: true,
-      },
-    })
-    .input(z.object({ key: z.string(), filePartTotal: z.number() }))
-    .output(
-      z.object({
-        uploadId: z.string(),
-        urls: z.array(
-          z.object({
-            url: z.string(),
-            partNumber: z.number(),
-          })
-        ),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { key, filePartTotal } = input;
-      const { s3 } = ctx;
-
-      const uploadId = (
-        await s3.createMultipartUpload({
-          Bucket: env.BUCKET_NAME,
-          Key: key,
-        })
-      ).UploadId;
-
-      if (!uploadId) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Could not create multipart upload',
-        });
-      }
-
-      const urls: Promise<{ url: string; partNumber: number }>[] = [];
-
-      for (let i = 1; i <= filePartTotal; i++) {
-        const uploadPartCommand = new UploadPartCommand({
-          Bucket: env.BUCKET_NAME,
-          Key: key,
-          UploadId: uploadId,
-          PartNumber: i,
-        });
-
-        const url = getSignedUrl(s3, uploadPartCommand).then((url) => ({
-          url,
-          partNumber: i,
-        }));
-
-        urls.push(url);
-      }
 
       return {
-        uploadId,
-        urls: await Promise.all(urls),
+        presignedUrl: await getSignedUrl(s3, putObjectCommand),
       };
-    }),
-
-  completedMultipartUpload: protectedProcedure
-    .input(
-      z.object({
-        key: z.string(),
-        uploadId: z.string(),
-        parts: z.array(
-          z.object({
-            ETag: z.string(),
-            PartNumber: z.number(),
-          })
-        ),
-      })
-    )
-    .output(
-      z.any()
-      // // which is zod version of CompleteMultipartUploadCommandOutput
-      // z.object({
-      //   Bucket: z.string().optional(),
-      //   ETag: z.string().optional(),
-      // })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { key, uploadId, parts } = input;
-      const { s3 } = ctx;
-
-      const completeMultipartUploadOutput = await s3.completeMultipartUpload({
-        Bucket: env.BUCKET_NAME,
-        Key: key,
-        UploadId: uploadId,
-        MultipartUpload: {
-          Parts: parts,
-        },
-      });
-
-      completeMultipartUploadOutput.ETag;
-
-      return completeMultipartUploadOutput;
     }),
 });
