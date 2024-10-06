@@ -9,7 +9,6 @@ const Docs = ({ spec }: InferGetStaticPropsType<typeof getStaticProps>) => {
       deepLinking
       persistAuthorization
       spec={spec}
-      docExpansion="full"
       defaultModelRendering="model"
     />
   );
