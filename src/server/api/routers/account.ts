@@ -63,6 +63,7 @@ export const accountRouter = createTRPCRouter({
       const token = sign(
         {
           id: user.id,
+          name: user.name,
           email: user.email,
         },
         env.JWT_SECRET,
@@ -116,6 +117,7 @@ export const accountRouter = createTRPCRouter({
       const token = sign(
         {
           id: queriedUser.id,
+          name: queriedUser.name,
           email: queriedUser.email,
         },
         env.JWT_SECRET,
