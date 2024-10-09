@@ -1,19 +1,22 @@
 import Head from 'next/head';
-import Link from 'next/link';
+import styled from '@emotion/styled';
 
-import styles from './index.module.css';
+const StyledIframe = styled.iframe({
+  width: '100%',
+  height: '100vh',
+  border: 0,
+  padding: 0,
+});
 
-export default function Home() {
+export default function AboutPage() {
   return (
     <>
       <Head>
-        <title>Create T3 App</title>
-        <meta name="description" content="인생네컷" />
+        <title>같이네컷</title>
+        <meta name="description" content="같이네컷" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <Link href="/docs">docs로 이동</Link>
-      </main>
+      <StyledIframe src="https://www.notioniframe.com/notion/7did5nhyric"></StyledIframe>
     </>
   );
 }
