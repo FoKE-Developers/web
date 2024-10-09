@@ -17,6 +17,12 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.658.1
         version: 3.658.1
+      '@egjs/agent':
+        specifier: ^2.4.4
+        version: 2.4.4
+      '@emotion/babel-plugin':
+        specifier: ^11.12.0
+        version: 11.12.0
       '@emotion/react':
         specifier: ^11.13.3
         version: 11.13.3(@types/react@18.3.9)(react@18.3.1)
@@ -380,6 +386,9 @@ packages:
 
   '@drizzle-team/brocli@0.10.1':
     resolution: {integrity: sha512-AHy0vjc+n/4w/8Mif+w86qpppHuF3AyXbcWW+R/W7GNA3F5/p2nuhlkCJaTXSLZheB4l1rtHzOfr9A7NwoR/Zg==}
+
+  '@egjs/agent@2.4.4':
+    resolution: {integrity: sha512-cvAPSlUILhBBOakn2krdPnOGv5hAZq92f1YHxYcfu0p7uarix2C6Ia3AVizpS1SGRZGiEkIS5E+IVTLg1I2Iog==}
 
   '@emotion/babel-plugin@11.12.0':
     resolution: {integrity: sha512-y2WQb+oP8Jqvvclh8Q55gLUyb7UFvgv7eJfsj7td5TToBrIUtPay2kMrZi4xjq9qw2vD0ZR5fSho0yqoFgX7Rw==}
@@ -4331,6 +4340,8 @@ snapshots:
   '@braintree/sanitize-url@7.0.2': {}
 
   '@drizzle-team/brocli@0.10.1': {}
+
+  '@egjs/agent@2.4.4': {}
 
   '@emotion/babel-plugin@11.12.0':
     dependencies:
