@@ -6,7 +6,7 @@ export const openApiDocument = generateOpenApiDocument(appRouter, {
   description: 'OpenAPI compliant REST API built using tRPC with Next.js',
   version: '1.0.0',
   // baseUrl: 'http://localhost/api',
-  baseUrl: 'http://4cuts.store/api',
-  docsUrl: 'http://4cuts.store/api/openapi.json',
+  baseUrl: 'https://4cuts.store/api',
+  docsUrl: 'https://4cuts.store/api/openapi.json',
   tags: ['account', 's3'],
 });
