@@ -27,9 +27,11 @@ export const s3Router = createTRPCRouter({
     })
     .input(
       z.object({
-        key: z
+        filename: z
           .string()
-          .describe(`\${session.user.name}/\${key}를 기준으로 스토리지에 저장`),
+          .describe(
+            `\${session.user.name}/\${filename}를 기준으로 스토리지에 저장. abc.png 이런식`
+          ),
         ContentLength: z.number().max(1024 * 1024 * 20).describe(`
             Byte단위. 
             20MB인경우 1024 * 1024 * 20. 
@@ -46,7 +48,7 @@ export const s3Router = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { key, ContentLength } = input;
+      const { filename, ContentLength } = input;
       const { s3 } = ctx;
 
       // 20 MB limit
@@ -58,7 +60,7 @@ export const s3Router = createTRPCRouter({
       }
       const putObjectCommand = new PutObjectCommand({
         Bucket: env.BUCKET_NAME,
-        Key: `${ctx.session.user.name}/${key}`,
+        Key: `${ctx.session.user.name}/${filename}`,
         ContentLength, // 10 MB
         ACL: 'public-read',
       });
