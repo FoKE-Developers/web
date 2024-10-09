@@ -5,12 +5,8 @@ import type {
 } from 'next';
 import styled from '@emotion/styled';
 import Image from 'next/image';
-import {
-  ComponentPropsWithoutRef,
-  ElementType,
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
+import type { ComponentPropsWithoutRef, ElementType } from 'react';
 import getAgent from '@egjs/agent';
 import Head from 'next/head';
 
@@ -155,6 +151,7 @@ export const getStaticProps = (async ({ params }) => {
     props: {
       path: `${path.join('/')}`,
     },
+    revalidate: 60 * 60 * 24, // 1 day
   };
 }) satisfies GetStaticProps;
 

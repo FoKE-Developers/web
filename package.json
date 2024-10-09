@@ -13,7 +13,9 @@
     "dev:app": "next dev -p 80",
     "dev:ssl": "local-ssl-proxy --key /etc/letsencrypt/live/4cuts.store/privkey.pem --cert /etc/letsencrypt/live/4cuts.store/fullchain.pem --source 443 --target 80",
     "lint": "next lint",
-    "start": "next start"
+    "start": "npm-run-all -p start:*",
+    "start:app": "next start -p 80",
+    "start:ssl": "local-ssl-proxy --key /etc/letsencrypt/live/4cuts.store/privkey.pem --cert /etc/letsencrypt/live/4cuts.store/fullchain.pem --source 443 --target 80"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.1.0",
