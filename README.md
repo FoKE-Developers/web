@@ -6,3 +6,7 @@
 npm install -g pnpm@9.11.0
 pnpm install
 ```
+
+## Swagger API
+
+https://4cuts.store/docs
