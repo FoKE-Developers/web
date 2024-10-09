@@ -5,25 +5,27 @@ import type {
 } from 'next';
 import styled from '@emotion/styled';
 import Image from 'next/image';
-import { ComponentPropsWithoutRef, ElementType } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  ElementType,
+  useEffect,
+  useState,
+} from 'react';
+import getAgent from '@egjs/agent';
 
 const Container = styled.div({
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',
   width: '100%',
-  justifyContent: 'center',
   alignItems: 'center',
   backgroundColor: '#201c1c',
   gap: 16,
 });
 
-const StyledImage = styled(Image)({
-  height: 'auto',
-});
-
 const HelpMessage = styled.span({
   fontSize: 14,
+  lineHeight: 1.5,
   color: 'white',
   marginTop: 16,
 });
@@ -31,7 +33,9 @@ const HelpMessage = styled.span({
 const ButtonContainer = styled.div({
   display: 'flex',
   flexDirection: 'row',
+  justifyContent: 'center',
   width: 400,
+  height: 80,
 });
 
 const Button = styled.button({
@@ -85,18 +89,38 @@ export default function DownloadPage({
   path,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const imageUrl = `${urlPrefix}/${path}`;
+  const agent = getAgent();
+  const [isIOS, setIsIOS] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsIOS(agent.os.name === 'ios');
+    setIsMounted(true);
+  }, [agent.os.name]);
 
   return (
     <Container>
-      <HelpMessage>이미지를 길게 눌러서 저장하세요</HelpMessage>
-      <StyledImage src={imageUrl} alt="img" width={200} height={300} />
+      <Image
+        style={{
+          marginTop: 100,
+        }}
+        src={imageUrl}
+        alt="img"
+        width={200}
+        height={300}
+      />
+      <HelpMessage>
+        {isIOS && isMounted && '이미지를 길게 눌러서 저장하세요'}
+      </HelpMessage>
       <ButtonContainer>
-        <ImageDownloadButton
-          imageUrl={imageUrl}
-          fileName={`${path?.split('/').pop()}`}
-        >
-          다운로드
-        </ImageDownloadButton>
+        {!isIOS && isMounted && (
+          <ImageDownloadButton
+            imageUrl={imageUrl}
+            fileName={`${path?.split('/').pop()}`}
+          >
+            다운로드
+          </ImageDownloadButton>
+        )}
       </ButtonContainer>
     </Container>
   );
