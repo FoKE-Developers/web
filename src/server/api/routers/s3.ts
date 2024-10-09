@@ -1,7 +1,6 @@
 // source: https://blog.nickramkissoon.com/posts/t3-s3-presigned-urls
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { env } from '~/env.js';
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
@@ -32,7 +31,9 @@ export const s3Router = createTRPCRouter({
           .describe(
             `\${session.user.name}/\${filename}를 기준으로 스토리지에 저장. abc.png 이런식`
           ),
-        ContentLength: z.number().max(1024 * 1024 * 20).describe(`
+        ContentLength: z
+          .number()
+          .max(1024 * 1024 * 20, 'File too large. (20MB Limit)').describe(`
             Byte단위. 
             20MB인경우 1024 * 1024 * 20. 
             20MB 제한있음.
@@ -51,17 +52,10 @@ export const s3Router = createTRPCRouter({
       const { filename, ContentLength } = input;
       const { s3 } = ctx;
 
-      // 20 MB limit
-      if (ContentLength > 1024 * 1024 * 20) {
-        throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'File too large. (20MB Limit)',
-        });
-      }
       const putObjectCommand = new PutObjectCommand({
         Bucket: env.BUCKET_NAME,
         Key: `${ctx.session.user.name}/${filename}`,
-        ContentLength, // 10 MB
+        ContentLength,
         ACL: 'public-read',
       });
 
