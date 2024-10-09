@@ -20,7 +20,7 @@ export const s3Router = createTRPCRouter({
         description: `
           url을 반환함. 반환된 url에 put 요청으로 업로드 할 수 있음.
           axios.put(url, f.slice(), { headers: { "Content-Type": f.type } })
-          성공시 https://kr.object.ncloudstorage.com/4cuts/\${session.user.id}/\${key} 를 통해서 파일에 접근 가능
+          성공시 https://kr.object.ncloudstorage.com/4cuts/\${session.user.id}/\${filename} 를 통해서 파일에 접근 가능
           session.user.name은 회원가입시 입력한 값임. GET /account/who-am-i 를 통해서 획득 가능함.
         `,
       },
