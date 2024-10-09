@@ -12,6 +12,7 @@ import {
   useState,
 } from 'react';
 import getAgent from '@egjs/agent';
+import Head from 'next/head';
 
 const Container = styled.div({
   display: 'flex',
@@ -99,30 +100,45 @@ export default function DownloadPage({
   }, [agent.os.name]);
 
   return (
-    <Container>
-      <Image
-        style={{
-          marginTop: 100,
-        }}
-        src={imageUrl}
-        alt="img"
-        width={200}
-        height={300}
-      />
-      <HelpMessage>
-        {isIOS && isMounted && '이미지를 길게 눌러서 저장하세요'}
-      </HelpMessage>
-      <ButtonContainer>
-        {!isIOS && isMounted && (
-          <ImageDownloadButton
-            imageUrl={imageUrl}
-            fileName={`${path?.split('/').pop()}`}
-          >
-            다운로드
-          </ImageDownloadButton>
-        )}
-      </ButtonContainer>
-    </Container>
+    <>
+      <Head>
+        <title>같이네컷</title>
+        <meta name="description" content="우리 같이 네컷 사진 찍을래요?" />
+        <meta property="og:title" content="같이네컷 다운로드" />
+        <meta
+          property="og:description"
+          content="기간이 만료되기 전에 빨리 다운로드 받으세요"
+        />
+        <meta property="og:url" content="https://4cuts.store" />
+        <meta property="og:locale" content="ko-KR" />
+        <meta property="og:image" content={imageUrl} />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Container>
+        <Image
+          style={{
+            marginTop: 100,
+          }}
+          src={imageUrl}
+          alt="img"
+          width={200}
+          height={300}
+        />
+        <HelpMessage>
+          {isIOS && isMounted && '이미지를 길게 눌러서 저장하세요'}
+        </HelpMessage>
+        <ButtonContainer>
+          {!isIOS && isMounted && (
+            <ImageDownloadButton
+              imageUrl={imageUrl}
+              fileName={`${path?.split('/').pop()}`}
+            >
+              다운로드
+            </ImageDownloadButton>
+          )}
+        </ButtonContainer>
+      </Container>
+    </>
   );
 }
 
