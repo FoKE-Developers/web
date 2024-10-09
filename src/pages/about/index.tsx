@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import Head from 'next/head';
 
 const StyledIframe = styled.iframe({
   width: '100%',
@@ -9,6 +10,13 @@ const StyledIframe = styled.iframe({
 
 export default function AboutPage() {
   return (
-    <StyledIframe src="https://www.notioniframe.com/notion/7did5nhyric"></StyledIframe>
+    <>
+      <Head>
+        <title>같이네컷</title>
+        <meta name="description" content="같이네컷" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <StyledIframe src="https://www.notioniframe.com/notion/7did5nhyric"></StyledIframe>
+    </>
   );
 }
