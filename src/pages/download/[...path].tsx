@@ -43,6 +43,7 @@ const Button = styled.button({
   color: 'white',
   width: 150,
   height: 50,
+  border: 0,
 });
 
 const ImageDownloadButton = <T extends ElementType = 'button'>({
@@ -74,7 +75,7 @@ const ImageDownloadButton = <T extends ElementType = 'button'>({
 
   return (
     <Button as={as} onClick={handleDownload} {...props}>
-      Download Image
+      이미지 다운로드
     </Button>
   );
 };
