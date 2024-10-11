@@ -103,7 +103,7 @@ export default function DownloadPage({
         <meta property="og:title" content="같이네컷 다운로드" />
         <meta
           property="og:description"
-          content="기간이 만료되기 전에 빨리 다운로드 받으세요"
+          content="기간(7일)이 만료되기 전에 빨리 다운로드 받으세요"
         />
         <meta property="og:url" content="https://4cuts.store" />
         <meta property="og:locale" content="ko-KR" />
