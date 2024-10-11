@@ -4,7 +4,6 @@ import type {
   InferGetStaticPropsType,
 } from 'next';
 import styled from '@emotion/styled';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import type { ComponentPropsWithoutRef, ElementType } from 'react';
 import getAgent from '@egjs/agent';
@@ -111,14 +110,13 @@ export default function DownloadPage({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Container>
-        <Image
+        <img
           style={{
-            marginTop: 100,
+            marginTop: 60,
           }}
           src={imageUrl}
           alt="img"
-          width={200}
-          height={300}
+          height={550}
         />
         <HelpMessage>
           {isIOS && isMounted && '이미지를 길게 눌러서 저장하세요'}
