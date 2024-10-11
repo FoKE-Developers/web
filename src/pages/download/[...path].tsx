@@ -107,7 +107,7 @@ export default function DownloadPage({
         />
         <meta property="og:url" content="https://4cuts.store" />
         <meta property="og:locale" content="ko-KR" />
-        <meta property="og:image" content={imageUrl} />
+        <meta property="og:image" content="/og-image.jpeg" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Container>
