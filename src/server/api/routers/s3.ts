@@ -3,8 +3,40 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { z } from 'zod';
 import { env } from '~/env.js';
-import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from '~/server/api/trpc';
 export const s3Router = createTRPCRouter({
+  listUserFiles: publicProcedure
+    .meta({
+      openapi: {
+        method: 'GET',
+        path: '/s3/list-files',
+        tags: ['s3'],
+        protect: true,
+        description: 'Returns list of files uploaded by the current user',
+      },
+    })
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input: { userId } }) => {
+      const response = await ctx.s3.listObjectsV2({
+        Bucket: env.BUCKET_NAME,
+        Prefix: `${userId}/`, // Only list objects that are in the user's folder
+      });
+
+      return {
+        files:
+          response.Contents?.map((object) => ({
+            key: object.Key,
+            size: object.Size,
+            lastModified: object.LastModified,
+            url: `https://kr.object.ncloudstorage.com/${env.BUCKET_NAME}/${object.Key}`,
+            downloadUrl: `//download/${object.Key}`,
+          })) ?? [],
+      };
+    }),
   /**
    * It will be used to create a presigned URL that can be used to upload a file with a specific key to our S3 bucket.
    * This will be used for regular uploads, where the entire file is uploaded in a single request.
