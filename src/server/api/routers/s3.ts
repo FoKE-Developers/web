@@ -20,6 +20,19 @@ export const s3Router = createTRPCRouter({
       },
     })
     .input(z.object({ userId: z.string() }))
+    .output(
+      z.object({
+        files: z.array(
+          z.object({
+            key: z.string().optional(),
+            size: z.number().optional(),
+            lastModified: z.date().optional(),
+            url: z.string(),
+            downloadUrl: z.string(),
+          })
+        ),
+      })
+    )
     .query(async ({ ctx, input: { userId } }) => {
       const response = await ctx.s3.listObjectsV2({
         Bucket: env.BUCKET_NAME,
