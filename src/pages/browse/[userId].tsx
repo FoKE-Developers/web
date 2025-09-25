@@ -1,11 +1,9 @@
-import {
-  GetServerSideProps,
+import type {
   GetStaticPaths,
   GetStaticProps,
-  InferGetServerSidePropsType,
   InferGetStaticPropsType,
 } from 'next';
-import { createServerSideHelpers } from '@trpc/react-query/server';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '~/utils/api';
 import { formatDistanceToNow } from 'date-fns';
 import styled from '@emotion/styled';
@@ -45,10 +43,79 @@ const FileCard = styled('div')({
 const BrowsePage = ({
   userId,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const [token, setToken] = useState<string | null>(null);
+  const utils = api.useContext();
+
+  const { data: currentUser } = api.account.getCurrentUser.useQuery(undefined, {
+    enabled: !!token,
+  });
+
+  const signInMutation = api.account.signIn.useMutation({
+    onSuccess: (data) => {
+      setToken(data.token);
+      localStorage.setItem('authToken', data.token);
+      void utils.s3.listUserFiles.invalidate();
+    },
+  });
+
   const { data: filesData } = api.s3.listUserFiles.useQuery(
-    { userId },
-    { enabled: userId !== undefined }
+    undefined,
+    { enabled: !!token }
   );
+
+  const handleLogin = useCallback(async () => {
+    const email = window.prompt('Email:');
+    if (!email) return;
+
+    const password = window.prompt('Password:');
+    if (!password) return;
+
+    void signInMutation.mutate({ email, password });
+  }, [signInMutation]);
+
+  // Check for stored token on mount
+  useEffect(() => {
+    const storedToken = localStorage.getItem('authToken');
+    if (storedToken) {
+      if (!currentUser || currentUser.name === userId) {
+        setToken(storedToken);
+      } else {
+        localStorage.removeItem('authToken');
+      }
+    } else if (!signInMutation.isPending && !signInMutation.error) {
+      void handleLogin();
+    }
+  }, [currentUser, userId, handleLogin, signInMutation]);
+
+  if (signInMutation.error) {
+    return (
+      <Container>
+        <Title>Login Failed</Title>
+        <div className="text-center text-red-500">
+          Please refresh to try again.
+        </div>
+      </Container>
+    );
+  }
+
+  if (!token || !currentUser) {
+    return (
+      <Container>
+        <Title>Waiting for authentication...</Title>
+      </Container>
+    );
+  }
+
+  if (currentUser.name !== userId) {
+    return (
+      <Container>
+        <Title>Access Denied</Title>
+        <div className="text-center text-red-500">
+          You cannot access files that do not belong to you.
+        </div>
+      </Container>
+    );
+  }
 
   return (
     <Container>
