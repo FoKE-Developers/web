@@ -19,12 +19,12 @@ export default function AboutPage() {
           property="og:description"
           content="우리 같이 네컷 사진 찍을래요?"
         />
-        <meta property="og:url" content="https://4cuts.store" />
+        <meta property="og:url" content="https://4cut.us" />
         <meta property="og:locale" content="ko-KR" />
         <meta property="og:image" content="/og-image.jpeg" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <StyledIframe src="https://www.notioniframe.com/notion/7did5nhyric"></StyledIframe>
+      <StyledIframe src="https://4cut.notion.site/ebd/39cf9db9af284925a4c3900b0441db3e"></StyledIframe>
     </>
   );
 }

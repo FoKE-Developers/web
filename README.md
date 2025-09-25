@@ -9,4 +9,4 @@ pnpm install
 
 ## Swagger API
 
-https://4cuts.store/docs
+https://4cut.us/docs

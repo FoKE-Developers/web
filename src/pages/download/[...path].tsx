@@ -105,7 +105,7 @@ export default function DownloadPage({
           property="og:description"
           content="기간(7일)이 만료되기 전에 빨리 다운로드 받으세요"
         />
-        <meta property="og:url" content="https://4cuts.store" />
+        <meta property="og:url" content="https://4cut.us" />
         <meta property="og:locale" content="ko-KR" />
         <meta property="og:image" content="/og-image.jpeg" />
         <link rel="icon" href="/favicon.ico" />
