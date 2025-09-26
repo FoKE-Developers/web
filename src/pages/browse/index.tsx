@@ -1,7 +1,6 @@
 import type {
-  GetStaticPaths,
-  GetStaticProps,
-  InferGetStaticPropsType,
+  GetServerSideProps,
+  InferGetServerSidePropsType
 } from 'next';
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '~/utils/api';
@@ -41,8 +40,8 @@ const FileCard = styled('div')({
 });
 
 const BrowsePage = ({
-  userId,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+  login,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [token, setToken] = useState<string | null>(null);
   const utils = api.useContext();
 
@@ -76,23 +75,19 @@ const BrowsePage = ({
   // Check for stored token on mount
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
-    if (storedToken) {
-      if (!currentUser || currentUser.name === userId) {
-        setToken(storedToken);
-      } else {
-        localStorage.removeItem('authToken');
-      }
-    } else if (!signInMutation.isPending && !signInMutation.error) {
+    if (storedToken && !login) {
+      setToken(storedToken);
+    } else if (!signInMutation.isSuccess && !signInMutation.isPending && !signInMutation.error) {
       void handleLogin();
     }
-  }, [currentUser, userId, handleLogin, signInMutation]);
+  }, [currentUser, login, handleLogin, signInMutation]);
 
   if (signInMutation.error) {
     return (
       <Container>
-        <Title>Login Failed</Title>
+        <Title>Access Denied</Title>
         <div className="text-center text-red-500">
-          Please refresh to try again.
+          Login failed. Please refresh to try again.
         </div>
       </Container>
     );
@@ -102,16 +97,8 @@ const BrowsePage = ({
     return (
       <Container>
         <Title>Waiting for authentication...</Title>
-      </Container>
-    );
-  }
-
-  if (currentUser.name !== userId) {
-    return (
-      <Container>
-        <Title>Access Denied</Title>
         <div className="text-center text-red-500">
-          You cannot access files that do not belong to you.
+          Please refresh this page if nothing happens.
         </div>
       </Container>
     );
@@ -146,21 +133,14 @@ const BrowsePage = ({
   );
 };
 
-export const getStaticProps = (async ({ params }) => {
-  const userId = params!.userId as string;
+export const getServerSideProps = (async ({ query }) => {
+  const login = query?.login ?? null;
 
   return {
     props: {
-      userId,
+      login,
     },
   };
-}) satisfies GetStaticProps;
-
-export const getStaticPaths = (async () => {
-  return {
-    paths: [],
-    fallback: 'blocking',
-  };
-}) satisfies GetStaticPaths;
+}) satisfies GetServerSideProps;
 
 export default BrowsePage;
