@@ -6,10 +6,9 @@ import { env } from '~/env.js';
 import {
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure,
 } from '~/server/api/trpc';
 export const s3Router = createTRPCRouter({
-  listUserFiles: publicProcedure
+  listUserFiles: protectedProcedure
     .meta({
       openapi: {
         method: 'GET',
@@ -19,7 +18,7 @@ export const s3Router = createTRPCRouter({
         description: 'Returns list of files uploaded by the current user',
       },
     })
-    .input(z.object({ userId: z.string() }))
+    .input(z.void())
     .output(
       z.object({
         files: z.array(
@@ -33,10 +32,13 @@ export const s3Router = createTRPCRouter({
         ),
       })
     )
-    .query(async ({ ctx, input: { userId } }) => {
+    .query(async ({ ctx }) => {
+      // Use the authenticated user's name from the session
+      const userName = ctx.session.user.name;
+
       const response = await ctx.s3.listObjectsV2({
         Bucket: env.BUCKET_NAME,
-        Prefix: `${userId}/`, // Only list objects that are in the user's folder
+        Prefix: `${userName}/`, // Only list objects that are in the user's folder
       });
 
       return {
